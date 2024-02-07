@@ -11,7 +11,6 @@ export class UserService {
     @InjectRepository(UserEntity)
     private userEntity: Repository<UserEntity>,
     @InjectRepository(TaskEntity)
-    private taskEntity: Repository<TaskEntity>,
     private dataSourse: DataSource,
   ) {}
 
@@ -26,7 +25,6 @@ export class UserService {
   async registerUser(data: RegisterDTO) {
     const user = new UserEntity();
 
-    user.created = data.created;
     user.firstName = data.firstName;
     user.name = data.name;
     user.telegramId = data.telegramId;

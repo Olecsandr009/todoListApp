@@ -6,8 +6,8 @@ export class TaskEntity {
   @PrimaryGeneratedColumn()
   _id: number;
 
-  @Column()
-  created: number;
+  @Column({ default: Date.now() })
+  created: Date;
 
   @Column()
   deadline: number;

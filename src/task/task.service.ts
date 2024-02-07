@@ -26,7 +26,6 @@ export class TaskService {
   async createTask(data: createDTO) {
     const task = new TaskEntity();
 
-    task.created = data.created;
     task.deadline = data.deadline;
     task.text = data.text;
     task.title = data.title;

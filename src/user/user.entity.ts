@@ -6,8 +6,8 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   _id: number;
 
-  @Column()
-  created: number;
+  @Column({ default: Date.now() })
+  created: Date;
 
   @Column()
   name: string;
