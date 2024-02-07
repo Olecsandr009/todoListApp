@@ -1,0 +1,6 @@
+todo {
+	# title
+	# text
+	# date
+	# deadline
+}
