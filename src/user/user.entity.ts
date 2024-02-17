@@ -1,18 +1,24 @@
 import { TaskEntity } from 'src/task/task.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'User' })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   _id: number;
 
-  @Column({ default: Date.now() })
+  @CreateDateColumn()
   created: Date;
 
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: '' })
   firstName: string;
 
   @Column()

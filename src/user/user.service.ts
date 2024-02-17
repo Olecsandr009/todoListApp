@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TaskEntity } from 'src/task/task.entity';
 import { DataSource, Repository } from 'typeorm';
 import { LoginDTO, RegisterDTO } from './user.dto';
 import { UserEntity } from './user.entity';
@@ -10,8 +9,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userEntity: Repository<UserEntity>,
-    @InjectRepository(TaskEntity)
-    private dataSourse: DataSource,
+    private dataSource: DataSource,
   ) {}
 
   async find() {
@@ -19,23 +17,47 @@ export class UserService {
   }
 
   async findOne(_id: number) {
-    return await this.userEntity.findOneBy({ _id });
+    const user = await this.userEntity.findOneBy({ _id });
+    if (user) return user;
+    else throw new NotFoundException('Користувача не знайдено');
   }
 
   async registerUser(data: RegisterDTO) {
     const user = new UserEntity();
+    console.log('register');
 
     user.firstName = data.firstName;
     user.name = data.name;
     user.telegramId = data.telegramId;
 
-    await this.dataSourse.transaction(
+    await this.dataSource.transaction(
       async (manager) => await manager.save(user),
     );
   }
+
   async loginUser(data: LoginDTO) {
-    return this.userEntity.findOneBy({ telegramId: data.telegramId });
+    const user = await this.userEntity.findOneBy({
+      telegramId: data.telegramId,
+    });
+    if (user) return user;
+    else throw new NotFoundException('Користувача не знайдено');
   }
+
+  async findTaskUser(_id: number) {
+    return await this.userEntity.find({
+      relations: ['task'],
+    });
+  }
+
+  // async findTaskUserByComplete(_id:number) {
+  //   return await this.userEntity.find({
+  //     relations: ['task'],
+  //     select: [
+  //       "task.*",
+  //       "CASE WHEN task.complete = true THEN 0 ELSE 1 END AS customOrder"
+  //     ]
+  //   })
+  // }
 
   async deleteUser(_id: number) {
     return this.userEntity.delete(_id);
