@@ -30,12 +30,16 @@ export class TaskService {
     task.text = data.text;
     task.title = data.title;
 
-    const user = await this.userEntity.findOneBy({ _id: data.userId });
+    const user = await this.userEntity.findOneBy({ telegramId: data.userId });
     task.user = user;
 
     await this.dataSourse.transaction(
       async (manager) => await manager.save(task),
     );
+  }
+
+  async completeTask(_id: number) {
+    await this.taskEntity.update(_id, {complete: true})
   }
 
   async deleteTask(_id: number) {

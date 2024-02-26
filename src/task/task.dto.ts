@@ -1,5 +1,5 @@
 export class createDTO {
-  deadline: number;
+  deadline: Date;
   title: string;
   text: string;
   userId: number;

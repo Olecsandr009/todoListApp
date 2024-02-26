@@ -1,16 +1,25 @@
 import { UserEntity } from 'src/user/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'Task' })
 export class TaskEntity {
   @PrimaryGeneratedColumn()
   _id: number;
 
-  @Column({ default: Date.now() })
+  @CreateDateColumn()
   created: Date;
 
+  @Column({default: false})
+  complete: boolean
+
   @Column()
-  deadline: number;
+  deadline: Date;
 
   @Column()
   title: string;

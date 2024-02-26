@@ -1,17 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TaskEntity } from 'src/task/task.entity';
 import { DataSource, Repository } from 'typeorm';
 import { LoginDTO, RegisterDTO } from './user.dto';
 import { UserEntity } from './user.entity';
+import { TaskEntity } from 'src/task/task.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userEntity: Repository<UserEntity>,
-    @InjectRepository(TaskEntity)
-    private dataSourse: DataSource,
+    private dataSource: DataSource,
   ) {}
 
   async find() {
@@ -19,22 +18,72 @@ export class UserService {
   }
 
   async findOne(_id: number) {
-    return await this.userEntity.findOneBy({ _id });
+    const user = await this.userEntity.findOneBy({ _id });
+    if (user) return user;
+    else throw new NotFoundException('Користувача не знайдено');
+  }
+
+  async findTasksByUser(_id:number) {
+    return await this.userEntity.findOne(
+      {
+        where: {telegramId: _id},
+        relations: {
+          task: true
+        }
+      }
+    )
+  }
+
+  async findTaskByUserComplete(_id:number) {
+    return await this.userEntity.findOne(
+      {
+        where: {
+          _id,
+          task: {
+            complete: true
+          }
+        },
+        relations: {
+          task: true
+        }
+      }
+    )
+  }
+
+  async findTaskByUserNoComplete(_id:number) {
+    return await this.userEntity.findOne(
+      {
+        where: {
+          _id,
+          task: {
+            complete: false
+          }
+        },
+        relations: {
+          task: true
+        }
+      }
+    )
   }
 
   async registerUser(data: RegisterDTO) {
     const user = new UserEntity();
+    console.log('register');
 
     user.firstName = data.firstName;
     user.name = data.name;
     user.telegramId = data.telegramId;
 
-    await this.dataSourse.transaction(
+    await this.dataSource.transaction(
       async (manager) => await manager.save(user),
     );
   }
   async loginUser(data: LoginDTO) {
-    return this.userEntity.findOneBy({ telegramId: data.telegramId });
+    const user = await this.userEntity.findOneBy({
+      telegramId: data.telegramId,
+    });
+    if (user) return user;
+    else throw new NotFoundException('Користувача не знайдено');
   }
 
   async deleteUser(_id: number) {

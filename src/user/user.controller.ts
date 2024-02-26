@@ -16,9 +16,19 @@ export class UserController {
     return await this.userService.find();
   }
 
-  @Get('get-task/:_id')
+  @Get('login-user/:_id')
+  async loginUser(@Param('_id') id: number) {
+    return await this.userService.loginUser({ telegramId: id });
+  }
+
+  @Get('get-user/:_id')
   async getUser(@Param('_id') _id: number) {
     return await this.userService.findOne(_id);
+  }
+
+  @Get('get-task-user/:_id')
+  async getUserTasks(@Param('_id') _id:number) {
+    return await this.userService.findTasksByUser(_id)
   }
 
   @Get('delete-user/:_id')
