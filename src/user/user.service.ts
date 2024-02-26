@@ -78,6 +78,7 @@ export class UserService {
       async (manager) => await manager.save(user),
     );
   }
+
   async loginUser(data: LoginDTO) {
     const user = await this.userEntity.findOneBy({
       telegramId: data.telegramId,
@@ -85,6 +86,22 @@ export class UserService {
     if (user) return user;
     else throw new NotFoundException('Користувача не знайдено');
   }
+
+  async findTaskUser(_id: number) {
+    return await this.userEntity.find({
+      relations: ['task'],
+    });
+  }
+
+  // async findTaskUserByComplete(_id:number) {
+  //   return await this.userEntity.find({
+  //     relations: ['task'],
+  //     select: [
+  //       "task.*",
+  //       "CASE WHEN task.complete = true THEN 0 ELSE 1 END AS customOrder"
+  //     ]
+  //   })
+  // }
 
   async deleteUser(_id: number) {
     return this.userEntity.delete(_id);

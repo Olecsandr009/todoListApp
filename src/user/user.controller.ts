@@ -35,4 +35,9 @@ export class UserController {
   async deleteUser(@Param('_id') _id: number) {
     return await this.userService.deleteUser(_id);
   }
+
+  @Get('get-task-user/:_id')
+  async getTaskUser(@Param('_id') _id: number) {
+    return await this.userService.findTaskUser(_id);
+  }
 }
