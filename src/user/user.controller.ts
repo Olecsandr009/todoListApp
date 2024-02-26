@@ -40,4 +40,9 @@ export class UserController {
   async getTaskUser(@Param('_id') _id: number) {
     return await this.userService.findTaskUser(_id);
   }
+
+  @Get('get-task-user-date/:_id')
+  async getTaskUserDate(@Param('_id') _id: number) {
+    return await this.userService.findTaskByUserDate(_id)
+  }
 }

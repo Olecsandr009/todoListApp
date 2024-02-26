@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, LessThanOrEqual, Repository } from 'typeorm';
 import { LoginDTO, RegisterDTO } from './user.dto';
 import { UserEntity } from './user.entity';
 import { TaskEntity } from 'src/task/task.entity';
@@ -66,6 +66,27 @@ export class UserService {
     )
   }
 
+  async findTaskByUserDate(_id:number) {
+
+    let currentDate = new Date()
+    const fiveDaysFromNow = new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000)
+
+    return await this.userEntity.findOne(
+      {
+        relations: {
+          task: true
+        },
+        where: {
+          telegramId: _id,
+          task: {
+            complete: false,
+            deadline: LessThanOrEqual(fiveDaysFromNow)
+          }
+        }
+      }
+    )
+  }
+
   async registerUser(data: RegisterDTO) {
     const user = new UserEntity();
     console.log('register');
@@ -92,16 +113,6 @@ export class UserService {
       relations: ['task'],
     });
   }
-
-  // async findTaskUserByComplete(_id:number) {
-  //   return await this.userEntity.find({
-  //     relations: ['task'],
-  //     select: [
-  //       "task.*",
-  //       "CASE WHEN task.complete = true THEN 0 ELSE 1 END AS customOrder"
-  //     ]
-  //   })
-  // }
 
   async deleteUser(_id: number) {
     return this.userEntity.delete(_id);
